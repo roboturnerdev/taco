@@ -1,0 +1,9 @@
+<div class="bg-white rounded-2xl shadow p-4 hover:shadow-lg transition">
+  <h2 class="text-xl font-semibold">{{ .Name }}</h2>
+  <p class="text-sm text-gray-600">{{ .Customer }} - {{ .Environment }}</p>
+  <div class="mt-2 space-x-2">
+    <button hx-get="/app/view?id={{ .ID }}" hx-target="#modal" class="text-blue-500 hover:underline">View</button>
+    <button hx-get="/app/edit?id={{ .ID }}" hx-target="#modal" class="text-yellow-500 hover:underline">Edit</button>
+  </div>
+</div>
+

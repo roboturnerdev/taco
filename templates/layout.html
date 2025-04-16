@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AppDeck</title>
+  <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="container mx-auto p-6">
+    {{ template "content" . }}
+  </div>
+  <div id="modal" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-30 hidden" hx-on="htmx:afterSwap: document.getElementById('modal').classList.remove('hidden')">
+  <div class="bg-white rounded-xl max-w-2xl mx-auto mt-24 p-6 shadow-lg" hx-on="click: event.stopPropagation()">
+    <!-- Modal content will load here -->
+  </div>
+</div>
+
+</body>
+</html>
+
