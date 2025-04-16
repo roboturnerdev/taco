@@ -2,38 +2,31 @@ package main
 
 import (
 	"html/template"
+	"log"
 	"net/http"
-	"time"
-	"github.com/google/uuid"
 )
 
-type Application struct {
-	ID            string
-	Name          string
-	Customer      string
-	Environment   string
-	InfraRepo     string
-	AppRepo       string
-	HelmChart     string
-	Identities    []string
-	ResourceGroup string
-	Notes         string
-	Tags          []string
-	LastUpdated   time.Time
+type App struct {
+	Name        string
+	Description string
+	RepoLink    string
+	Notes       string
 }
 
-var apps = map[string]Application{}
-
-var templates = template.Must(template.ParseGlob("templates/*.html"))
+var apps = []App{
+	{"CoolApp", "Deploys widgets", "https://github.com/example/coolapp", "Uses MSI for auth"},
+	{"InfraTool", "Bicep deployments", "https://github.com/example/infratool", "Tests in prod"},
+}
 
 func main() {
-	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/app/view", viewAppHandler)
-	http.HandleFunc("/app/edit", editAppHandler)
-	http.HandleFunc("/app/update", updateAppHandler)
+	tmpl := template.Must(template.ParseGlob("templates/*.html"))
+
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
-	seedDummyApps()
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		tmpl.ExecuteTemplate(w, "index.html", apps)
+	})
+
+	log.Println("Server running at http://localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
-
