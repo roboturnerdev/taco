@@ -10,11 +10,13 @@ templ WorkstreamList(workstreams []store.Workstream) {
 
         for _, ws := range workstreams {
             <div class="dark:bg-gray-800 rounded-xl bg-white p-4 shadow-md hover:shadow-md hover:shadow-pink-500/50 transform transition duration-300">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{ ws.Name }</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{ ws.Code }</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{ ws.Location }</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{ ws.Description }</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400 italic">"{ ws.Quote }"</p>
+              <a href="/workstreams/{ws.ID}" class="block bg-gray-800 p-4 rounded shadow hover:bg-gray-700">
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{ ws.Name }</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{ ws.Code }</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{ ws.Location }</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{ ws.Description }</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 italic">"{ ws.Quote }"</p>
+              </a>
             </div>
         }
 

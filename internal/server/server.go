@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
+	"strings"
 	"syscall"
 
 	"taco/internal/store"
@@ -52,6 +54,7 @@ func (s *server) Start() error {
 	router.HandleFunc("GET /workstreams", s.workstreamsHandler)
 	router.HandleFunc("GET /workstreams/new", s.workstreamsNewFormHandler)
 	router.HandleFunc("POST /workstreams/new", s.addWorkstreamHandler)
+	router.HandleFunc("GET /workstreams/", s.workstreamDetailHandler)
 
 	s.httpServer = &http.Server{
 		Addr:    fmt.Sprintf(":%d", s.port),
@@ -88,6 +91,27 @@ func (s *server) workstreamsHandler(w http.ResponseWriter, r *http.Request) {
 	err = templates.Layout(wsTemplate, "TACO", "/workstreams").Render(r.Context(), w)
 	if err != nil {
 		s.logger.Printf("Error when rendering workstreams: %v", err)
+	}
+}
+
+// GET /workstreams/{id}
+func (s *server) workstreamDetailHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := strings.TrimPrefix(r.URL.Path, "/workstreams/")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	workstream, err := s.workstreamDb.GetWorkstreamByID(id)
+	if err != nil {
+		http.Error(w, "Workstream not found", http.StatusNotFound)
+		return
+	}
+
+	err = templates.WorkstreamDetailPage(workstream).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, "Error rendering page", http.StatusInternalServerError)
 	}
 }
 

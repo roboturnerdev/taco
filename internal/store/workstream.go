@@ -12,6 +12,7 @@ type Workstream struct {
     Code        string
     Location    string
     Description string
+    Identity    string
     Quote       string
 }
 
@@ -33,6 +34,7 @@ func NewWorkstreamStore(dbPath string) (*WorkstreamStore, error) {
         code TEXT,
         location TEXT,
         description TEXT,
+        identity TEXT,
         quote TEXT
     );`
     _, err = db.Exec(schema)
@@ -45,11 +47,36 @@ func NewWorkstreamStore(dbPath string) (*WorkstreamStore, error) {
 
 func (s *WorkstreamStore) CreateWorkstream(ws Workstream) error {
     _, err := s.DB.Exec(
-        `INSERT INTO workstreams (name, code, location, description, quote) VALUES (?, ?, ?, ?, ?)`,
-        ws.Name, ws.Code, ws.Location, ws.Description, ws.Quote,
+        `INSERT INTO workstreams (name, code, location, description, identity, quote) VALUES (?, ?, ?, ?, ?, ?)`,
+        ws.Name, ws.Code, ws.Location, ws.Description, ws.Identity, ws.Quote, 
     )
     return err
 }
+
+func (s *WorkstreamStore) GetWorkstreamByID(id int) (Workstream, error) {
+	var ws Workstream
+
+	query := `
+		SELECT id, name, code, location, description, identity, quote 
+		FROM workstreams
+		WHERE id = ?
+	`
+	err := s.DB.QueryRow(query, id).Scan(
+		&ws.ID,
+		&ws.Name,
+		&ws.Code,
+		&ws.Location,
+		&ws.Description,
+		&ws.Identity,
+		&ws.Quote,
+	)
+	if err != nil {
+		return ws, err
+	}
+
+	return ws, nil
+}
+
 
 func (s *WorkstreamStore) DeleteWorkstream(id int) error {
     _, err := s.DB.Exec(`DELETE FROM workstreams WHERE id = ?`, id)
@@ -57,7 +84,7 @@ func (s *WorkstreamStore) DeleteWorkstream(id int) error {
 }
 
 func (s *WorkstreamStore) GetAllWorkstreams() ([]Workstream, error) {
-    rows, err := s.DB.Query(`SELECT id, name, code, location, description, quote FROM workstreams`)
+    rows, err := s.DB.Query(`SELECT id, name, code, location, description, quote, identity FROM workstreams`)
     if err != nil {
         return nil, err
     }
@@ -66,7 +93,7 @@ func (s *WorkstreamStore) GetAllWorkstreams() ([]Workstream, error) {
     var workstreams []Workstream
     for rows.Next() {
         var ws Workstream
-        err := rows.Scan(&ws.ID, &ws.Name, &ws.Code, &ws.Location, &ws.Description, &ws.Quote)
+        err := rows.Scan(&ws.ID, &ws.Name, &ws.Code, &ws.Location, &ws.Description, &ws.Quote, &ws.Identity)
         if err != nil {
             return nil, err
         }

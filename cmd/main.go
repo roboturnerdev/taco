@@ -27,6 +27,7 @@ func main() {
 	// 	Code:		 "Bicep + Powershell",
 	// 	Location:	 "Azure",
 	// 	Description: "Three Word Acronym",
+	// 	Identity: 	 "EntraID",
 	// 	Quote:		 "Managing the accredited boundary like no other; The Gold Standard.",
 	// })
 	// if err != nil {
