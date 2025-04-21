@@ -1,9 +1,0 @@
-{{ define "content" }}
-<h2 class="text-2xl font-bold mb-2">{{ .Name }}</h2>
-<p><strong>Customer:</strong> {{ .Customer }}</p>
-<p><strong>Environment:</strong> {{ .Environment }}</p>
-<p><strong>Infra Repo:</strong> <a href="{{ .InfraRepo }}" class="text-blue-500">{{ .InfraRepo }}</a></p>
-<p><strong>Notes:</strong> {{ .Notes }}</p>
-<button onclick="document.getElementById('modal').classList.add('hidden')" class="mt-4 text-gray-500">Close</button>
-{{ end }}
-
