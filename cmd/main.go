@@ -33,11 +33,7 @@ func main() {
 	// 	logger.Printf("Error adding sample workstream: %s", err)
 	// }
 
-	logger.Print("Creating guest store..")
-	guestDb := store.NewGuestStore(logger)
-	guestDb.AddGuest(store.Guest{Name: "Rob", Email: "rob@taco.dev"})
-
-	srv, err := server.NewServer(logger, port, guestDb, workstreamDb)
+	srv, err := server.NewServer(logger, port, workstreamDb)
 	if err != nil {
 		logger.Fatalf("Error when creating server: %s", err)
 		os.Exit(1)

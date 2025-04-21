@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -14,26 +13,17 @@ import (
 	"taco/internal/templates"
 )
 
-type GuestStore interface {
-	AddGuest(guest store.Guest) error
-	GetGuests() ([]store.Guest, error)
-}
-
 type server struct {
 	logger     			*log.Logger
 	port      			int
 	httpServer 			*http.Server
-	guestDb    			GuestStore
 	workstreamDb  		*store.WorkstreamStore
 }
 
-func NewServer(logger *log.Logger, port int, guestDb GuestStore, workstreamDb *store.WorkstreamStore) (*server, error) {
+func NewServer(logger *log.Logger, port int, workstreamDb *store.WorkstreamStore) (*server, error) {
 
 	if logger == nil {
 		return nil, fmt.Errorf("logger is required")
-	}
-	if guestDb == nil {
-		return nil, fmt.Errorf("guestDb is required")
 	}
 	if workstreamDb == nil {
 		return nil, fmt.Errorf("guestDb is required")
@@ -42,7 +32,6 @@ func NewServer(logger *log.Logger, port int, guestDb GuestStore, workstreamDb *s
 	return &server{
 		logger:  logger,
 		port:    port,
-		guestDb: guestDb,
 		workstreamDb: workstreamDb,
 	}, nil
 }
@@ -60,9 +49,6 @@ func (s *server) Start() error {
 	router.HandleFunc("GET /", s.defaultHandler)
 	router.HandleFunc("GET /about", s.aboutHandler)
 	router.HandleFunc("GET /health", s.healthCheckHandler)
-	router.HandleFunc("POST /guests", s.addGuestHandler)
-	router.HandleFunc("GET /guests", s.getGuestsHandler)
-	router.HandleFunc("GET /signup", s.getSignupHandler)
 	router.HandleFunc("GET /workstreams", s.workstreamsHandler)
 	router.HandleFunc("GET /workstreams/new", s.workstreamsNewFormHandler)
 	router.HandleFunc("POST /workstreams/new", s.addWorkstreamHandler)
@@ -204,56 +190,4 @@ func (s *server) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
-}
-
-func (s *server) addGuestHandler(w http.ResponseWriter, r *http.Request) {
-
-	payload, err := io.ReadAll(r.Body)
-	if err != nil {
-		s.logger.Printf("Error when reading request body: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	guest, err := store.DecodeGuest(payload)
-	if err != nil {
-		s.logger.Printf("Error when decoding guest: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	if err := s.guestDb.AddGuest(guest); err != nil {
-		s.logger.Printf("Error when adding guest: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	guests, err := s.guestDb.GetGuests()
-	if err != nil {
-		s.logger.Printf("Error when getting guests: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	templates.Guests(guests, true).Render(r.Context(), w)
-
-}
-
-func (s *server) getGuestsHandler(w http.ResponseWriter, r *http.Request) {
-
-	guests, err := s.guestDb.GetGuests()
-	if err != nil {
-		s.logger.Printf("Error when getting guests: %v", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	for _, guest := range guests {
-		w.Write([]byte(fmt.Sprintf("Name: %s, Email: %s\n", guest.Name, guest.Email)))
-	}
-}
-
-func (s *server) getSignupHandler(w http.ResponseWriter, r *http.Request) {
-
-	templates.Signup().Render(r.Context(), w)
 }
