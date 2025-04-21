@@ -9,7 +9,7 @@ templ WorkstreamList(workstreams []store.Workstream) {
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
         for _, ws := range workstreams {
-            <div class="rounded-xl bg-white p-4 shadow hover:shadow-md transition dark:bg-gray-800">
+            <div class="dark:bg-gray-800 rounded-xl bg-white p-4 shadow-md hover:shadow-md hover:shadow-pink-500/50 transform transition duration-300">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{ ws.Name }</h2>
             <p class="text-sm text-gray-500 dark:text-gray-400">{ ws.Code }</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">{ ws.Location }</p>

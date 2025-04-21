@@ -77,6 +77,19 @@ templ nav(activeLink string) {
             </a>
             }
           </li>
+          <li>
+
+            if activeLink == "/workstreams" {
+            <a class="block rounded-md px-5 py-2.5 text-sm font-medium text-orange-600 transition" href="/">
+              Workstreams
+            </a>
+            } else {
+            <a class="block rounded-md px-5 py-2.5 text-sm font-medium text-white transition hover:bg-orange-700 dark:hover:bg-orange-500 dark:hover:text-white"
+              href="/workstreams">
+              Workstreams
+            </a>
+            }
+          </li>
         </ul>
       </nav>
     </div>

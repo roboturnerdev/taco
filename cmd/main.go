@@ -21,16 +21,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = workstreamDb.CreateWorkstream(store.Workstream{
-		Name:		 "Enclave",
-		Code:		 "Bicep / Powershell",
-		Location:	 "Azure",
-		Description: "Three Word Acronym",
-		Quote:		 "Managing the accredited boundary like no other; The Gold Standard.",
-	})
-	if err != nil {
-		logger.Printf("Error adding sample workstream: %s", err)
-	}
+	// Seed DB with one
+	// err = workstreamDb.CreateWorkstream(store.Workstream{
+	// 	Name:		 "Enclave",
+	// 	Code:		 "Bicep + Powershell",
+	// 	Location:	 "Azure",
+	// 	Description: "Three Word Acronym",
+	// 	Quote:		 "Managing the accredited boundary like no other; The Gold Standard.",
+	// })
+	// if err != nil {
+	// 	logger.Printf("Error adding sample workstream: %s", err)
+	// }
 
 	logger.Print("Creating guest store..")
 	guestDb := store.NewGuestStore(logger)

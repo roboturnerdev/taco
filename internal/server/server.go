@@ -62,6 +62,7 @@ func (s *server) Start() error {
 	router.HandleFunc("POST /guests", s.addGuestHandler)
 	router.HandleFunc("GET /guests", s.getGuestsHandler)
 	router.HandleFunc("GET /signup", s.getSignupHandler)
+	router.HandleFunc("GET /workstreams", s.workstreamsHandler)
 
 	s.httpServer = &http.Server{
 		Addr:    fmt.Sprintf(":%d", s.port),
@@ -83,6 +84,22 @@ func (s *server) Start() error {
 		return err
 	}
 	return nil
+}
+
+// GET /workstreams
+func (s *server) workstreamsHandler(w http.ResponseWriter, r *http.Request) {
+
+	workstreams, err := s.workstreamDb.GetAllWorkstreams()
+	if err != nil {
+		http.Error(w, "No workstreams", http.StatusInternalServerError)
+		return
+	}
+
+	wsTemplate := templates.WorkstreamList(workstreams)
+	err = templates.Layout(wsTemplate, "TACO", "/workstreams").Render(r.Context(), w)
+	if err != nil {
+		s.logger.Printf("Error when rendering workstreams: %v", err)
+	}
 }
 
 func (s *server) listWorkstreamsHandler(w http.ResponseWriter, r *http.Request) {
