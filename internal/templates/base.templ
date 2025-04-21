@@ -1,0 +1,99 @@
+package templates
+
+templ header(title string) {
+
+<head>
+  <title>{ title }</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+}
+
+templ footer() {
+<footer class="bg-white dark:bg-gray-900">
+  <div class="mx-auto max-w-screen-xl px-4 pb-6 pt-16 sm:px-6 lg:px-8 lg:pt-24">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        // footer row above very bottom (helpful links, contact us, etc)
+    </div>
+
+    // very bottom
+    <div class="mt-12 border-t border-gray-100 pt-6 dark:border-gray-800">
+      <div class="text-center sm:flex sm:justify-between sm:text-left">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          <span class="block sm:inline">All rights reserved.</span>
+
+          <a class="inline-block text-orange-600 underline transition hover:text-orange-600/75 dark:text-orange-500 dark:hover:text-orange-500/75"
+            href="#">
+            Terms & Conditions
+          </a>
+
+          <span>&middot;</span>
+
+          <a class="inline-block text-orange-600 underline transition hover:text-orange-600/75 dark:text-orange-500 dark:hover:text-orange-500/75"
+            href="#">
+            Privacy Policy
+          </a>
+        </p>
+
+        <p class="mt-4 text-sm text-gray-500 sm:order-first sm:mt-0 dark:text-gray-400">
+          &copy; 2025 @roboturnerdev on github.com
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+}
+
+templ nav(activeLink string) {
+
+<header class="bg-white dark:bg-gray-900 shadow">
+  <div class="mx-auto flex h-16 max-w-screen-xl items-center gap-8 px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-1 items-center justify-end md:justify-between">
+      <nav aria-label="Global" class="hidden md:block">
+        <ul class="flex items-center gap-6 text-sm">
+          <li>
+            if activeLink == "/" {
+            <a class="block rounded-md px-5 py-2.5 text-sm font-medium text-orange-600 transition" href="/">
+              Home
+            </a>
+            } else {
+            <a class="block rounded-md px-5 py-2.5 text-sm font-medium text-white transition hover:bg-orange-700 dark:hover:bg-orange-500 dark:hover:text-white"
+              href="/">
+              Home
+            </a>
+            }
+          </li>
+          <li>
+
+            if activeLink == "/about" {
+            <a class="block rounded-md px-5 py-2.5 text-sm font-medium text-orange-600 transition" href="/">
+              About
+            </a>
+            } else {
+            <a class="block rounded-md px-5 py-2.5 text-sm font-medium text-white transition hover:bg-orange-700 dark:hover:bg-orange-500 dark:hover:text-white"
+              href="/about">
+              About
+            </a>
+            }
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+}
+
+templ Layout(contents templ.Component, title string, activeLink string) {
+@header(title)
+
+<body class="flex flex-col h-full bg-slate-900">
+  @nav(activeLink)
+  <main class="flex-1 container ">
+    @contents
+  </main>
+  @footer()
+  <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+  <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+</body>
+}
