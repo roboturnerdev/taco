@@ -18,7 +18,6 @@
 # vendor/
 
 internal/templates/*.go
-static/css/style.css
 
 # Go workspace file
 go.work
