@@ -119,6 +119,7 @@ func (s *server) workstreamsNewFormHandler(w http.ResponseWriter, r *http.Reques
 // POST /workstreams/new - Try add to database
 func (s *server) addWorkstreamHandler(w http.ResponseWriter, r *http.Request) {
 
+	// do not do this unless we are posting
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
