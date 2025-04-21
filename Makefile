@@ -30,7 +30,6 @@ tailwind-build: ## one-time compile tailwindcss styles
 
 .PHONY: build
 build: ## compile tailwindcss and templ files and build the project
-	./tailwindcss -i ./static/css/custom.css -o ./static/css/style.css
 	templ generate
 	go build -o ./tmp/$(APP_NAME) ./cmd/$(APP_NAME)/main.go
 
