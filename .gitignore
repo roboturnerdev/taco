@@ -29,3 +29,5 @@ go.work.sum
 
 tailwindcss
 tmp
+
+*.db

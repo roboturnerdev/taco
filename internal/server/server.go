@@ -64,6 +64,8 @@ func (s *server) Start() error {
 	router.HandleFunc("GET /guests", s.getGuestsHandler)
 	router.HandleFunc("GET /signup", s.getSignupHandler)
 	router.HandleFunc("GET /workstreams", s.workstreamsHandler)
+	router.HandleFunc("GET /workstreams/new", s.workstreamsNewFormHandler)
+	router.HandleFunc("POST /workstreams/new", s.addWorkstreamHandler)
 
 	s.httpServer = &http.Server{
 		Addr:    fmt.Sprintf(":%d", s.port),
@@ -101,6 +103,77 @@ func (s *server) workstreamsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		s.logger.Printf("Error when rendering workstreams: %v", err)
 	}
+}
+
+// GET /workstreams/new - Render the form to create a new workstream
+func (s *server) workstreamsNewFormHandler(w http.ResponseWriter, r *http.Request) {
+
+	newWorkstreamTemplate := templates.NewWorkstreamForm()
+	err := templates.Layout(newWorkstreamTemplate, "New Workstream", "/workstreams/new").Render(r.Context(), w)
+	if err != nil {
+		s.logger.Printf("Error when rendering new workstream form: %v", err)
+		http.Error(w, "Failed to render form", http.StatusInternalServerError)
+	}
+}
+
+// POST /workstreams/new - Try add to database
+func (s *server) addWorkstreamHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Unable to parse form", http.StatusBadRequest)
+		return
+	}
+
+	name := r.FormValue("name")
+	if name == "" {
+		http.Error(w, "Workstream name is required", http.StatusBadRequest)
+		return
+	}
+
+	code := r.FormValue("code")
+	if code == "" {
+		http.Error(w, "Workstream code is required", http.StatusBadRequest)
+		return
+	}
+
+	location := r.FormValue("location")
+	if location == "" {
+		http.Error(w, "Workstream location is required", http.StatusBadRequest)
+		return
+	}
+
+	description := r.FormValue("description")
+	if description == "" {
+		http.Error(w, "Workstream description is required", http.StatusBadRequest)
+		return
+	}
+
+	quote := r.FormValue("quote")
+	if quote == "" {
+		http.Error(w, "Workstream quote is required", http.StatusBadRequest)
+		return
+	}
+	
+	workstream := store.Workstream{
+		Name:			name,
+		Code: 			code,
+		Location: 		location,
+		Description: 	description,
+		Quote: 			quote,
+	}
+	err = s.workstreamDb.CreateWorkstream(workstream)
+	if err != nil {
+		http.Error(w, "Failed to create workstream", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/workstreams", http.StatusFound)
 }
 
 // GET /

@@ -21,7 +21,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Seed DB with one
+	// Uncomment on first run to seed DB with one
 	// err = workstreamDb.CreateWorkstream(store.Workstream{
 	// 	Name:		 "Enclave",
 	// 	Code:		 "Bicep + Powershell",

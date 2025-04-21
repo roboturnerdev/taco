@@ -1,0 +1,25 @@
+package templates
+
+import (
+)
+
+templ NewWorkstreamForm() {
+  <main class="max-w-7xl mx-auto p-6">
+    <div class="dark:bg-gray-800 rounded-xl bg-white p-4 shadow-md hover:shadow-md hover:shadow-pink-500/50 transform transition duration-300">
+        <form hx-post="/workstreams/new" hx-target="#workstreams-list">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+        <label for="code">Code:</label>
+        <input type="text" id="code" name="code" required>
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="location" required>
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" required>
+        <label for="quote">Quote:</label>
+        <input type="text" id="quote" name="quote" required>
+        
+        <button type="submit" class="block mt-4 w-full rounded-md px-5 py-2.5 text-sm font-medium text-white bg-orange-600 transition hover:bg-orange-700 dark:hover:bg-orange-500">Send it</button>
+    </form>
+    </div>
+  </main>
+}
