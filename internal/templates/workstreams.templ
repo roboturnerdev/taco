@@ -1,0 +1,28 @@
+package templates
+
+import (
+    "taco/internal/store"
+)
+
+templ WorkstreamList(workstreams []store.Workstream) {
+  <main class="max-w-7xl mx-auto p-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+        for _, ws := range workstreams {
+            <div class="rounded-xl bg-white p-4 shadow hover:shadow-md transition dark:bg-gray-800">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{ ws.Name }</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{ ws.Code }</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{ ws.Location }</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{ ws.Description }</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 italic">"{ ws.Quote }"</p>
+            </div>
+        }
+
+        <!-- Add New Card -->
+        <a href="/workstreams/new" 
+            class="flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-4 text-gray-500 hover:border-gray-500 hover:text-gray-700 dark:border-gray-600 dark:hover:border-gray-400 dark:hover:text-white transition">
+        <span class="text-3xl font-bold">+</span>
+        </a>
+    </div>
+  </main>
+}

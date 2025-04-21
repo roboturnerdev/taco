@@ -1,26 +1,40 @@
 package templates
 
 templ Home() {
-<section class="overflow-hidden bg-gray-50 sm:grid sm:grid-cols-2 sm:items-center dark:bg-gray-900">
-  <div class="p-8 md:p-12 lg:px-16 lg:py-24">
-    <div class="mx-auto max-w-xl text-center" id="splash-left">
-      <h2 class="text-2xl font-bold text-gray-900 md:text-3xl dark:text-white">
-        🌮 TACO 🌮
-      </h2>
-
-      <p class="hidden text-gray-500 md:mt-4 md:block dark:text-gray-400">
-        Technical Application Configuration Overview <br />
-        Guest's can sign up <br />
-      </p>
-
-      <div class="mt-4 md:mt-8">
-        <button hx-get="/signup" hx-swap="innerHTML settle:1s" hx-target="#splash-left"
-          class="inline-block rounded bg-orange-600 px-12 py-3 text-sm font-medium text-white transition hover:bg-orange-700 focus:outline-none focus:ring focus:ring-yellow-400">
-          I am brave enough
-        </button>
+  <main class="max-w-7xl mx-auto p-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <!-- Example Workstream Cards -->
+      <div class="rounded-xl bg-white p-4 shadow hover:shadow-md transition dark:bg-gray-800">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Enclave</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Bicep / Powershell</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Azure</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Three Word Acronym</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 italic">"Managing the accredited boundary like no other; The Gold Standard"</p>
       </div>
-    </div>
-  </div>
 
-</section>
+      <div class="rounded-xl bg-white p-4 shadow hover:shadow-md transition dark:bg-gray-800">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Taco Truck</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Bicep</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Kubernetes</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Helm</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">D-MyApps</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 italic">"Manage your own food truck out of the box!"</p>
+      </div>
+
+      <div class="rounded-xl bg-white p-4 shadow hover:shadow-md transition dark:bg-gray-800">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Calculator</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Terraform</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Kubernetes</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400"></p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">D-SharedApps</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400 font-style:italic">"Everyone needs a new calculator app to calculate calculations."</p>
+      </div>
+
+      <!-- Add New Card -->
+      <a href="/workstreams/new" 
+         class="flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-4 text-gray-500 hover:border-gray-500 hover:text-gray-700 dark:border-gray-600 dark:hover:border-gray-400 dark:hover:text-white transition">
+        <span class="text-3xl font-bold">+</span>
+      </a>
+    </div>
+  </main>
 }

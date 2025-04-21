@@ -20,13 +20,14 @@ type GuestStore interface {
 }
 
 type server struct {
-	logger     *log.Logger
-	port       int
-	httpServer *http.Server
-	guestDb    GuestStore
+	logger     		*log.Logger
+	port      		int
+	httpServer 		*http.Server
+	guestDb    		GuestStore
+	workstreamDb  	*store.WorkstreamStore
 }
 
-func NewServer(logger *log.Logger, port int, guestDb GuestStore) (*server, error) {
+func NewServer(logger *log.Logger, port int, guestDb GuestStore, workstreamDb *store.WorkstreamStore) (*server, error) {
 
 	if logger == nil {
 		return nil, fmt.Errorf("logger is required")
@@ -34,10 +35,15 @@ func NewServer(logger *log.Logger, port int, guestDb GuestStore) (*server, error
 	if guestDb == nil {
 		return nil, fmt.Errorf("guestDb is required")
 	}
+	if workstreamDb == nil {
+		return nil, fmt.Errorf("guestDb is required")
+	}
 	return &server{
 		logger:  logger,
 		port:    port,
-		guestDb: guestDb}, nil
+		guestDb: guestDb,
+		workstreamDb: workstreamDb,
+		}, nil
 }
 
 func (s *server) Start() error {
@@ -77,6 +83,17 @@ func (s *server) Start() error {
 		return err
 	}
 	return nil
+}
+
+func (s *server) listWorkstreamsHandler(w http.ResponseWriter, r *http.Request) {
+
+	wss, err := s.workstreamDb.GetAllWorkstreams()
+	if err != nil {
+		http.Error(w, "No fetch workstreams", http.StatusInternalServerError)
+		return
+	}
+
+	templates.WorkstreamList(wss).Render(r.Context(), w)
 }
 
 // GET /

@@ -2,6 +2,7 @@
 
 ## Startup
 
-1. `make help`
-2. `make build`
-3. `make watch`
+0. `go mod tidy`
+1. `make build`
+2. `make watch`
+3. `localhost:9001`
