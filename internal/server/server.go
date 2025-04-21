@@ -84,7 +84,7 @@ func (s *server) defaultHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	homeTemplate := templates.Home()
-	err := templates.Layout(homeTemplate, "Spooktober party", "/").Render(r.Context(), w)
+	err := templates.Layout(homeTemplate, "TACO", "/").Render(r.Context(), w)
 	if err != nil {
 		s.logger.Printf("Error when rendering home: %v", err)
 	}
