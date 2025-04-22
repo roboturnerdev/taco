@@ -112,20 +112,20 @@ func (s *server) workstreamsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = templates.Layout(templates.WorkstreamList(workstreams), "TACO", "/workstreams").Render(r.Context(), w)
-	if err != nil {
-		s.logger.Printf("Error when rendering workstreams: %v", err)
+	if err = templates.Layout(templates.WorkstreamList(workstreams), "TACO", "/workstreams").
+		Render(r.Context(), w); err != nil {
+			s.logger.Printf("Error when rendering workstreams: %v", err)
 	}
 }
 
 // GET /workstreams/new - Render the form to create a new workstream
 func (s *server) workstreamsNewHandler(w http.ResponseWriter, r *http.Request) {
 
-	err := templates.Layout(templates.NewWorkstreamForm(), "New Workstream", "/workstreams/new").Render(r.Context(), w)
-	if err != nil {
-		s.logger.Printf("Error when rendering new workstream form: %v", err)
-		http.Error(w, "Failed to render form", http.StatusInternalServerError)
-	}
+	if err := templates.Layout(templates.NewWorkstreamForm(), "New Workstream", "/workstreams/new").
+		Render(r.Context(), w); err != nil {
+			s.logger.Printf("Error when rendering new workstream form: %v", err)
+			http.Error(w, "Failed to render form", http.StatusInternalServerError)
+		}
 }
 
 
@@ -138,7 +138,7 @@ func (s *server) workstreamsPostNewHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	if err := r.ParseForm(); err != nil {
+	if errParse := r.ParseForm(); errParse != nil {
 		http.Error(w, "Unable to parse form", http.StatusBadRequest)
 		return
 	}
@@ -163,8 +163,8 @@ func (s *server) workstreamsPostNewHandler(w http.ResponseWriter, r *http.Reques
 		Identity:		identity,
 		Quote: 			quote,
 	}
-	err = s.workstreamDb.CreateWorkstream(workstream)
-	if err != nil {
+
+	if err := s.workstreamDb.CreateWorkstream(workstream); err != nil {
 		http.Error(w, "Failed to create workstream", http.StatusInternalServerError)
 		return
 	}
@@ -199,9 +199,9 @@ func (s *server) workstreamIdHandler(w http.ResponseWriter, r *http.Request) {
 func (s *server) homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
-	err := templates.Layout(templates.Home(), "TACO", "/").Render(r.Context(), w)
-	if err != nil {
-		s.logger.Printf("Error when rendering home: %v", err)
+	if err := templates.Layout(templates.Home(), "TACO", "/").
+		Render(r.Context(), w); err != nil {
+			s.logger.Printf("Error when rendering home: %v", err)
 	}
 }
 
@@ -209,9 +209,9 @@ func (s *server) homeHandler(w http.ResponseWriter, r *http.Request) {
 func (s *server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
-	err := templates.Layout(templates.About(), "About", "/about").Render(r.Context(), w)
-	if err != nil {
-		s.logger.Printf("Error when rendering about: %v", err)
+	if err := templates.Layout(templates.About(), "About", "/about").
+		Render(r.Context(), w); err != nil {
+			s.logger.Printf("Error when rendering about: %v", err)
 	}
 }
 
