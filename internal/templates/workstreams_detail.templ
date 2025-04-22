@@ -3,15 +3,34 @@ package templates
 import "taco/internal/store"
 
 templ WorkstreamDetailPage(ws store.Workstream) {
-  <main class="max-w-4xl mx-auto py-10 px-6 text-white">
-    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-6">{ws.Name}</h1>
+  <main class="max-w-4xl mx-auto p-6">
+    <div class="rounded-xl bg-white dark:bg-gray-800 p-6 shadow-md hover:shadow-lg transition-shadow duration-300">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">
+        {ws.Name}
+      </h1>
 
-    <div class="space-y-4">
-      <p><span class="font-semibold">Code:</span> {ws.Code}</p>
-      <p><span class="font-semibold">Location:</span> {ws.Location}</p>
-      <p><span class="font-semibold">Description:</span> {ws.Description}</p>
-      <p><span class="font-semibold">Identity:</span> {ws.Identity}</p>
-      <p><span class="font-semibold italic">Quote:</span> {ws.Quote}</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300">
+        <div>
+          <p class="font-medium text-gray-500 dark:text-gray-400">Code</p>
+          <p class="text-base">{ws.Code}</p>
+        </div>
+        <div>
+          <p class="font-medium text-gray-500 dark:text-gray-400">Location</p>
+          <p class="text-base">{ws.Location}</p>
+        </div>
+        <div class="sm:col-span-2">
+          <p class="font-medium text-gray-500 dark:text-gray-400">Description</p>
+          <p class="text-base">{ws.Description}</p>
+        </div>
+        <div class="sm:col-span-2">
+          <p class="font-medium text-gray-500 dark:text-gray-400">Identity</p>
+          <p class="text-base">{ws.Identity}</p>
+        </div>
+        <div class="sm:col-span-2">
+          <p class="font-medium text-gray-500 dark:text-gray-400 italic">Quote</p>
+          <p class="text-base italic text-pink-500 dark:text-pink-400">"{ws.Quote}"</p>
+        </div>
+      </div>
     </div>
   </main>
 }
