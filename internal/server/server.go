@@ -8,11 +8,14 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
-	"strings"
 	"syscall"
+	"time"
 
 	"taco/internal/store"
 	"taco/internal/templates"
+
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 )
 
 type server struct {
@@ -28,7 +31,7 @@ func NewServer(logger *log.Logger, port int, workstreamDb *store.WorkstreamStore
 		return nil, fmt.Errorf("logger is required")
 	}
 	if workstreamDb == nil {
-		return nil, fmt.Errorf("guestDb is required")
+		return nil, fmt.Errorf("workstreamDb is required")
 	}
 
 	return &server{
@@ -43,34 +46,53 @@ func (s *server) Start() error {
 	s.logger.Printf("Starting server on port %d", s.port)
 	var stopChan chan os.Signal
 
-	router := http.NewServeMux()
+	// chi
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
-	fileServer := http.FileServer(http.Dir("./static"))
-	router.Handle("GET /static/", http.StripPrefix("/static/", fileServer))
+	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
-	router.HandleFunc("GET /", s.defaultHandler)
-	router.HandleFunc("GET /about", s.aboutHandler)
-	router.HandleFunc("GET /health", s.healthCheckHandler)
-	router.HandleFunc("GET /workstreams", s.workstreamsHandler)
-	router.HandleFunc("GET /workstreams/new", s.workstreamsNewFormHandler)
-	router.HandleFunc("POST /workstreams/new", s.addWorkstreamHandler)
-	router.HandleFunc("GET /workstreams/", s.workstreamDetailHandler)
+	r.Get("/", s.homeHandler)
+	r.Get("/about", s.aboutHandler)
+	r.Get("/health", s.healthCheckHandler)
 
+	r.Route("/workstreams", func(r chi.Router) {
+		r.Get("/", s.workstreamsHandler)
+		r.Get("/new", s.workstreamsNewHandler)
+		r.Post("/new", s.workstreamsPostNewHandler)
+		r.Get("/{id}", s.workstreamIdHandler)
+	})
+	
 	s.httpServer = &http.Server{
-		Addr:    fmt.Sprintf(":%d", s.port),
-		Handler: router}
+		Addr:			fmt.Sprintf(":%d", s.port),
+		Handler:		r,
+		ReadTimeout:	5 * time.Second,
+		WriteTimeout:	10 * time.Second,
+		IdleTimeout:	15 * time.Second,
+	}
 
 	stopChan = make(chan os.Signal, 1)
 	signal.Notify(stopChan, os.Interrupt, syscall.SIGTERM)
 
+	// Goroutine
+	// httpServer.ListenAndServe() blocks the process
+	// putting it in a goroutine it prevents it from blocking shutdown logic
+	// if the server crashes for any reason other than being manually shutdown it logs fatal
 	go func() {
 		if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("Error when running server: %s", err)
 		}
 	}()
 
+	// the main function blocks here until a signal is received on stopChan
 	<-stopChan
+	s.logger.Println("Shutting down [TACO] server...")
 
+	// This example of Go works to still be readable and explicit
+	// There is only "error" coming back from the function
+	// The lifecycle of err here is only the if block
+	// Consideration: variables inside if blocks are scoped to it, and lost after
 	if err := s.httpServer.Shutdown(context.Background()); err != nil {
 		log.Fatalf("Error when shutting down server: %v", err)
 		return err
@@ -81,53 +103,34 @@ func (s *server) Start() error {
 // GET /workstreams
 func (s *server) workstreamsHandler(w http.ResponseWriter, r *http.Request) {
 
+	// Try to avoid mixing control flow and success logic inside a conditional block like this
+	// It is against Go's usual clean separation of logic.
+	// The lifecycle of workstreams here is beyond the error handling for the db call
 	workstreams, err := s.workstreamDb.GetAllWorkstreams()
 	if err != nil {
 		http.Error(w, "No workstreams", http.StatusInternalServerError)
 		return
 	}
 
-	wsTemplate := templates.WorkstreamList(workstreams)
-	err = templates.Layout(wsTemplate, "TACO", "/workstreams").Render(r.Context(), w)
+	err = templates.Layout(templates.WorkstreamList(workstreams), "TACO", "/workstreams").Render(r.Context(), w)
 	if err != nil {
 		s.logger.Printf("Error when rendering workstreams: %v", err)
 	}
 }
 
-// GET /workstreams/{id}
-func (s *server) workstreamDetailHandler(w http.ResponseWriter, r *http.Request) {
-	idStr := strings.TrimPrefix(r.URL.Path, "/workstreams/")
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		http.NotFound(w, r)
-		return
-	}
-
-	workstream, err := s.workstreamDb.GetWorkstreamByID(id)
-	if err != nil {
-		http.Error(w, "Workstream not found", http.StatusNotFound)
-		return
-	}
-
-	err = templates.WorkstreamDetailPage(workstream).Render(r.Context(), w)
-	if err != nil {
-		http.Error(w, "Error rendering page", http.StatusInternalServerError)
-	}
-}
-
 // GET /workstreams/new - Render the form to create a new workstream
-func (s *server) workstreamsNewFormHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) workstreamsNewHandler(w http.ResponseWriter, r *http.Request) {
 
-	newWorkstreamTemplate := templates.NewWorkstreamForm()
-	err := templates.Layout(newWorkstreamTemplate, "New Workstream", "/workstreams/new").Render(r.Context(), w)
+	err := templates.Layout(templates.NewWorkstreamForm(), "New Workstream", "/workstreams/new").Render(r.Context(), w)
 	if err != nil {
 		s.logger.Printf("Error when rendering new workstream form: %v", err)
 		http.Error(w, "Failed to render form", http.StatusInternalServerError)
 	}
 }
 
+
 // POST /workstreams/new - Try add to database
-func (s *server) addWorkstreamHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) workstreamsPostNewHandler(w http.ResponseWriter, r *http.Request) {
 
 	// do not do this unless we are posting
 	if r.Method != http.MethodPost {
@@ -148,28 +151,28 @@ func (s *server) addWorkstreamHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	code := r.FormValue("code")
-	if code == "" {
-		http.Error(w, "Workstream code is required", http.StatusBadRequest)
-		return
-	}
+	// if code == "" {
+	// 	http.Error(w, "Workstream code is required", http.StatusBadRequest)
+	// 	return
+	// }
 
 	location := r.FormValue("location")
-	if location == "" {
-		http.Error(w, "Workstream location is required", http.StatusBadRequest)
-		return
-	}
+	// if location == "" {
+	// 	http.Error(w, "Workstream location is required", http.StatusBadRequest)
+	// 	return
+	// }
 
 	description := r.FormValue("description")
-	if description == "" {
-		http.Error(w, "Workstream description is required", http.StatusBadRequest)
-		return
-	}
+	// if description == "" {
+	// 	http.Error(w, "Workstream description is required", http.StatusBadRequest)
+	// 	return
+	// }
 
 	quote := r.FormValue("quote")
-	if quote == "" {
-		http.Error(w, "Workstream quote is required", http.StatusBadRequest)
-		return
-	}
+	// if quote == "" {
+	// 	http.Error(w, "Workstream quote is required", http.StatusBadRequest)
+	// 	return
+	// }
 	
 	workstream := store.Workstream{
 		Name:			name,
@@ -187,12 +190,45 @@ func (s *server) addWorkstreamHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/workstreams", http.StatusFound)
 }
 
+// GET /workstreams/{id}
+func (s *server) workstreamIdHandler(w http.ResponseWriter, r *http.Request) {
+	
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)	// ensure id is converted to integer
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	workstream, err := s.workstreamDb.GetWorkstreamByID(id)
+	if err != nil {
+		http.Error(w, "Workstream not found", http.StatusNotFound)
+		return
+	}
+
+	workstreamPath := "/workstreams/" + strconv.Itoa(workstream.ID)
+	err = templates.Layout(templates.WorkstreamDetailPage(workstream), "TACO", workstreamPath).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, "Error rendering page", http.StatusInternalServerError)
+	}
+
+	// workstreams, err := s.workstreamDb.GetAllWorkstreams()
+	// if err != nil {
+	// 	http.Error(w, "No workstreams", http.StatusInternalServerError)
+	// 	return
+	// }
+
+	// err = templates.Layout(templates.WorkstreamList(workstreams), "TACO", "/workstreams").Render(r.Context(), w)
+	// if err != nil {
+	// 	s.logger.Printf("Error when rendering workstreams: %v", err)
+	// }
+}
+
 // GET /
-func (s *server) defaultHandler(w http.ResponseWriter, r *http.Request) {
+func (s *server) homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
-	homeTemplate := templates.Home()
-	err := templates.Layout(homeTemplate, "TACO", "/").Render(r.Context(), w)
+	err := templates.Layout(templates.Home(), "TACO", "/").Render(r.Context(), w)
 	if err != nil {
 		s.logger.Printf("Error when rendering home: %v", err)
 	}
@@ -202,8 +238,7 @@ func (s *server) defaultHandler(w http.ResponseWriter, r *http.Request) {
 func (s *server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
-	aboutTemplate := templates.About()
-	err := templates.Layout(aboutTemplate, "About", "/about").Render(r.Context(), w)
+	err := templates.Layout(templates.About(), "About", "/about").Render(r.Context(), w)
 	if err != nil {
 		s.logger.Printf("Error when rendering about: %v", err)
 	}
