@@ -2,14 +2,6 @@
 help: ## print make targets 
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: install-deps
-install-deps:
-	go mod tidy
-	go get github.com/a-h/templ
-	go get github.com/a-h/templ/runtime
-	go install github.com/air-verse/air@latest
-	go install github.com/a-h/templ/cmd/templ@latest
-
 .PHONY: go-install-air
 go-install-air: ## Installs the air build reload system using 'go install'
 	go install github.com/air-verse/air@latest
