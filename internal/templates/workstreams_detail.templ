@@ -1,6 +1,9 @@
 package templates
 
-import "taco/internal/store"
+import (
+  "taco/internal/store"
+  "strconv"
+)
 
 templ WorkstreamDetailPage(ws store.Workstream) {
   <main class="max-w-4xl mx-auto p-6">
@@ -31,6 +34,13 @@ templ WorkstreamDetailPage(ws store.Workstream) {
           <p class="text-base italic text-pink-500 dark:text-pink-400">"{ws.Quote}"</p>
         </div>
       </div>
+
+      <!-- Delete Button -->
+      <form method="POST" action={templ.URL("/workstreams/" + strconv.Itoa(ws.ID) + "/delete")} class="mt-6" hx-disable>
+          <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">
+              Delete Workstream
+          </button>
+      </form>
     </div>
   </main>
 }

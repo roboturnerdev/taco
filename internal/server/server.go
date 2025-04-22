@@ -62,6 +62,7 @@ func (s *server) Start() error {
 		r.Get("/new", s.workstreamsNewHandler)
 		r.Post("/new", s.workstreamsPostNewHandler)
 		r.Get("/{id}", s.workstreamIdHandler)
+		r.Post("/{id}/delete", s.deleteWorkstreamHandler)
 	})
 	
 	s.httpServer = &http.Server{
@@ -187,6 +188,24 @@ func (s *server) workstreamIdHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error rendering page", http.StatusInternalServerError)
 	}
+}
+
+// POST /workstreams/{id}/delete
+func (s *server) deleteWorkstreamHandler(w http.ResponseWriter, r *http.Request) {
+	
+	idStr := chi.URLParam(r, "id")
+	id, idErr := strconv.Atoi(idStr)
+	if idErr != nil {
+		http.NotFound(w, r)
+		return
+	}
+
+	if err := s.workstreamDb.DeleteWorkstream(id); err != nil {
+		http.Error(w, "Failed to delete workstream", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/workstreams", http.StatusSeeOther)
 }
 
 // GET / - Home page
