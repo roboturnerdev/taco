@@ -46,7 +46,7 @@ func (s *server) Start() error {
 	s.logger.Printf("Starting server on port %d", s.port)
 	var stopChan chan os.Signal
 
-	// chi
+	// chi router
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)

@@ -9,6 +9,10 @@
 4. `make watch`
 5. `localhost:9001`
 
+You may need to delete "workstreams.db" if it was created without the latest tables, or use this tool to edit manually:
+
+[VS Code Extension: `SQLite3 Editor`](https://marketplace.visualstudio.com/items/?itemName=yy0931.vscode-sqlite3-editor)
+
 # Notes
 
 A Tour Of Go
