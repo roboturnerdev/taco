@@ -138,8 +138,7 @@ func (s *server) workstreamsPostNewHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err := r.ParseForm()
-	if err != nil {
+	if err := r.ParseForm(); err != nil {
 		http.Error(w, "Unable to parse form", http.StatusBadRequest)
 		return
 	}
