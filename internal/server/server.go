@@ -89,10 +89,6 @@ func (s *server) Start() error {
 	<-stopChan
 	s.logger.Println("Shutting down [TACO] server...")
 
-	// This example of Go works to still be readable and explicit
-	// There is only "error" coming back from the function
-	// The lifecycle of err here is only the if block
-	// Consideration: variables inside if blocks are scoped to it, and lost after
 	if err := s.httpServer.Shutdown(context.Background()); err != nil {
 		log.Fatalf("Error when shutting down server: %v", err)
 		return err
@@ -100,18 +96,23 @@ func (s *server) Start() error {
 	return nil
 }
 
-// GET /workstreams
+// GET /workstreams - show all workstream tooltip style blocks
 func (s *server) workstreamsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Try to avoid mixing control flow and success logic inside a conditional block like this
 	// It is against Go's usual clean separation of logic.
-	// The lifecycle of workstreams here is beyond the error handling for the db call
+	// The lifecycle of workstreams memory is beyond the error handling for the db call
+	// We use it to call the template in the next section
 	workstreams, err := s.workstreamDb.GetAllWorkstreams()
 	if err != nil {
 		http.Error(w, "No workstreams", http.StatusInternalServerError)
 		return
 	}
 
+	// This example of Go works as devils advocate to the point above while still being readable and explicit
+	// There is only "error" coming back from the function
+	// The lifecycle of err here is only the if block
+	// Consideration: variables inside if blocks are scoped to it, and garbage collected after
 	if err = templates.Layout(templates.WorkstreamList(workstreams), "TACO", "/workstreams").
 		Render(r.Context(), w); err != nil {
 			s.logger.Printf("Error when rendering workstreams: %v", err)
