@@ -151,34 +151,17 @@ func (s *server) workstreamsPostNewHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	code := r.FormValue("code")
-	// if code == "" {
-	// 	http.Error(w, "Workstream code is required", http.StatusBadRequest)
-	// 	return
-	// }
-
 	location := r.FormValue("location")
-	// if location == "" {
-	// 	http.Error(w, "Workstream location is required", http.StatusBadRequest)
-	// 	return
-	// }
-
 	description := r.FormValue("description")
-	// if description == "" {
-	// 	http.Error(w, "Workstream description is required", http.StatusBadRequest)
-	// 	return
-	// }
-
+	identity := r.FormValue("identity")
 	quote := r.FormValue("quote")
-	// if quote == "" {
-	// 	http.Error(w, "Workstream quote is required", http.StatusBadRequest)
-	// 	return
-	// }
 	
 	workstream := store.Workstream{
 		Name:			name,
 		Code: 			code,
 		Location: 		location,
 		Description: 	description,
+		Identity:		identity,
 		Quote: 			quote,
 	}
 	err = s.workstreamDb.CreateWorkstream(workstream)
@@ -211,17 +194,6 @@ func (s *server) workstreamIdHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Error rendering page", http.StatusInternalServerError)
 	}
-
-	// workstreams, err := s.workstreamDb.GetAllWorkstreams()
-	// if err != nil {
-	// 	http.Error(w, "No workstreams", http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// err = templates.Layout(templates.WorkstreamList(workstreams), "TACO", "/workstreams").Render(r.Context(), w)
-	// if err != nil {
-	// 	s.logger.Printf("Error when rendering workstreams: %v", err)
-	// }
 }
 
 // GET /
