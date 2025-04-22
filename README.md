@@ -89,3 +89,9 @@ if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClos
 ```
 
 **Consideration: Variables inside if blocks are scoped to it, and garbage collected after.**
+
+### Hero Icons / TailwindCSS
+
+[heroicons](https://heroicons.com/)
+
+- FOSS svg code and icons

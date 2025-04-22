@@ -23,12 +23,12 @@ func main() {
 
 	// Uncomment on first run to seed DB with one
 	// err = workstreamDb.CreateWorkstream(store.Workstream{
-	// 	Name:		 "Enclave",
-	// 	Code:		 "Bicep + Powershell",
-	// 	Location:	 "Azure",
+	// 	Name:        "Enclave",
+	// 	Code:        "Bicep + Powershell",
+	// 	Location:    "Azure",
 	// 	Description: "Three Word Acronym",
-	// 	Identity: 	 "EntraID",
-	// 	Quote:		 "Managing the accredited boundary like no other; The Gold Standard.",
+	// 	Identity:    "EntraID",
+	// 	Quote:       "Managing the accredited boundary like no other; The Gold Standard.",
 	// })
 	// if err != nil {
 	// 	logger.Printf("Error adding sample workstream: %s", err)
