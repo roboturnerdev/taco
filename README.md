@@ -2,12 +2,15 @@
 
 ## Startup
 
-0. `go mod tidy`
-1. `make go-install-air`
-2. `make go-install-templ`
-3. `make build`
-4. `make watch`
-5. `localhost:9001`
+```bash
+go mod tidy
+go get github.com/a-h/templ
+go get github.com/a-h/templ/runtime
+make go-install-air
+make go-install-templ
+make build
+make watch
+```
 
 You may need to delete "workstreams.db" if it was created without the latest tables, or use this tool to edit manually:
 
