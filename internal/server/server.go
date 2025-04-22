@@ -109,7 +109,7 @@ func (s *server) workstreamsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// This example of Go works as devils advocate to the point above while still being readable and explicit
+	// This example of a streamlined if/error handling block is still readable and explicit
 	// There is only "error" coming back from the function
 	// The lifecycle of err here is only the if block
 	// Consideration: variables inside if blocks are scoped to it, and garbage collected after
