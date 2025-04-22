@@ -13,7 +13,7 @@ You may need to delete "workstreams.db" if it was created without the latest tab
 
 [VS Code Extension: `SQLite3 Editor`](https://marketplace.visualstudio.com/items/?itemName=yy0931.vscode-sqlite3-editor)
 
-# Notes
+## Notes
 
 A Tour Of Go
 https://go.dev/tour/list
@@ -65,6 +65,24 @@ Unlike C, Go has no pointer arithmetic
 
 Try to avoid mixing control flow and success logic inside a conditional block. It is against Go's usual clean separation of logic. The lifecycle of a variable may be beyond the error handling for the function call.
 
+Explicit Example:
+
+```go
+workstreams, err := s.workstreamDb.GetAllWorkstreams()
+if err != nil {
+    http.Error(w, "No workstreams", http.StatusInternalServerError)
+    return
+}
+```
+
 You can streamline if/error handling blocks to still be readable and explicit when there is only "error" coming back from the function. The lifecycle of error is only the if block.
+
+Streamlined Example:
+
+```go
+if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	log.Fatalf("Error when running server: %s", err)
+}
+```
 
 > Consideration: Variables inside if blocks are scoped to it, and garbage collected after.
