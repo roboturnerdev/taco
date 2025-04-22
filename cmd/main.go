@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"taco/internal/server"
-	"taco/internal/store"
+	"github.com/roboturnerdev/taco/internal/server"
+	"github.com/roboturnerdev/taco/internal/store"
 )
 
 func main() {

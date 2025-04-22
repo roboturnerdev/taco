@@ -1,4 +1,4 @@
-module taco
+module github.com/roboturnerdev/taco
 
 go 1.23.8
 

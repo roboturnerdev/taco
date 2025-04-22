@@ -11,8 +11,8 @@ import (
 	"syscall"
 	"time"
 
-	"taco/internal/store"
-	"taco/internal/templates"
+	"github.com/roboturnerdev/taco/internal/store"
+	"github.com/roboturnerdev/taco/internal/templates"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
