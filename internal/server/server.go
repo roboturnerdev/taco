@@ -11,18 +11,18 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/roboturnerdev/taco/internal/store"
-	"github.com/roboturnerdev/taco/internal/templates"
+	"taco/internal/store"
+	"taco/internal/templates"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )
 
 type server struct {
-	logger     			*log.Logger
-	port      			int
-	httpServer 			*http.Server
-	workstreamDb  		*store.WorkstreamStore
+	logger       *log.Logger
+	port         int
+	httpServer   *http.Server
+	workstreamDb *store.WorkstreamStore
 }
 
 func NewServer(logger *log.Logger, port int, workstreamDb *store.WorkstreamStore) (*server, error) {
@@ -35,8 +35,8 @@ func NewServer(logger *log.Logger, port int, workstreamDb *store.WorkstreamStore
 	}
 
 	return &server{
-		logger:  logger,
-		port:    port,
+		logger:       logger,
+		port:         port,
 		workstreamDb: workstreamDb,
 	}, nil
 }
@@ -64,13 +64,13 @@ func (s *server) Start() error {
 		r.Get("/{id}", s.workstreamIdHandler)
 		r.Post("/{id}/delete", s.deleteWorkstreamHandler)
 	})
-	
+
 	s.httpServer = &http.Server{
-		Addr:			fmt.Sprintf(":%d", s.port),
-		Handler:		r,
-		ReadTimeout:	5 * time.Second,
-		WriteTimeout:	10 * time.Second,
-		IdleTimeout:	15 * time.Second,
+		Addr:         fmt.Sprintf(":%d", s.port),
+		Handler:      r,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  15 * time.Second,
 	}
 
 	stopChan = make(chan os.Signal, 1)
@@ -108,7 +108,7 @@ func (s *server) workstreamsHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err = templates.Layout(templates.WorkstreamList(workstreams), "TACO", "/workstreams").
 		Render(r.Context(), w); err != nil {
-			s.logger.Printf("Error when rendering workstreams: %v", err)
+		s.logger.Printf("Error when rendering workstreams: %v", err)
 	}
 }
 
@@ -117,11 +117,10 @@ func (s *server) workstreamsNewHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := templates.Layout(templates.NewWorkstreamForm(), "New Workstream", "/workstreams/new").
 		Render(r.Context(), w); err != nil {
-			s.logger.Printf("Error when rendering new workstream form: %v", err)
-			http.Error(w, "Failed to render form", http.StatusInternalServerError)
-		}
+		s.logger.Printf("Error when rendering new workstream form: %v", err)
+		http.Error(w, "Failed to render form", http.StatusInternalServerError)
+	}
 }
-
 
 // POST /workstreams/new - Try add to database
 func (s *server) workstreamsPostNewHandler(w http.ResponseWriter, r *http.Request) {
@@ -149,14 +148,14 @@ func (s *server) workstreamsPostNewHandler(w http.ResponseWriter, r *http.Reques
 	description := r.FormValue("description")
 	identity := r.FormValue("identity")
 	quote := r.FormValue("quote")
-	
+
 	workstream := store.Workstream{
-		Name:			name,
-		Code: 			code,
-		Location: 		location,
-		Description: 	description,
-		Identity:		identity,
-		Quote: 			quote,
+		Name:        name,
+		Code:        code,
+		Location:    location,
+		Description: description,
+		Identity:    identity,
+		Quote:       quote,
 	}
 
 	if err := s.workstreamDb.CreateWorkstream(workstream); err != nil {
@@ -169,9 +168,9 @@ func (s *server) workstreamsPostNewHandler(w http.ResponseWriter, r *http.Reques
 
 // GET /workstreams/{id}
 func (s *server) workstreamIdHandler(w http.ResponseWriter, r *http.Request) {
-	
+
 	idStr := chi.URLParam(r, "id")
-	id, err := strconv.Atoi(idStr)	// ensure id is converted to integer
+	id, err := strconv.Atoi(idStr) // ensure id is converted to integer
 	if err != nil {
 		http.NotFound(w, r)
 		return
@@ -192,7 +191,7 @@ func (s *server) workstreamIdHandler(w http.ResponseWriter, r *http.Request) {
 
 // POST /workstreams/{id}/delete
 func (s *server) deleteWorkstreamHandler(w http.ResponseWriter, r *http.Request) {
-	
+
 	idStr := chi.URLParam(r, "id")
 	id, idErr := strconv.Atoi(idStr)
 	if idErr != nil {
@@ -214,7 +213,7 @@ func (s *server) homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	if err := templates.Layout(templates.Home(), "TACO", "/").
 		Render(r.Context(), w); err != nil {
-			s.logger.Printf("Error when rendering home: %v", err)
+		s.logger.Printf("Error when rendering home: %v", err)
 	}
 }
 
@@ -224,7 +223,7 @@ func (s *server) aboutHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	if err := templates.Layout(templates.About(), "About", "/about").
 		Render(r.Context(), w); err != nil {
-			s.logger.Printf("Error when rendering about: %v", err)
+		s.logger.Printf("Error when rendering about: %v", err)
 	}
 }
 
