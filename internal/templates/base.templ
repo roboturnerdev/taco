@@ -29,22 +29,10 @@ templ footer() {
       <div class="text-center sm:flex sm:justify-between sm:text-left">
         <p class="text-sm text-gray-500 dark:text-gray-400">
           <span class="block sm:inline">All rights reserved.</span>
-
-          <a class="inline-block text-orange-600 underline transition hover:text-orange-600/75 dark:text-orange-500 dark:hover:text-orange-500/75"
-            href="#">
-            Terms & Conditions
-          </a>
-
-          <span>&middot;</span>
-
-          <a class="inline-block text-orange-600 underline transition hover:text-orange-600/75 dark:text-orange-500 dark:hover:text-orange-500/75"
-            href="#">
-            Privacy Policy
-          </a>
         </p>
 
         <p class="mt-4 text-sm text-gray-500 sm:order-first sm:mt-0 dark:text-gray-400">
-          <a href="https://github.com/roboturnerdev">github.com/roboturnerdev</a> &copy; 2025 | <a href="https://github.com/roboturnerdev/taco">🌮TACO REPO🌮</a>
+         <a href="https://github.com/roboturnerdev/taco">github</a>
         </p>
       </div>
     </div>
@@ -111,7 +99,7 @@ templ Layout(contents templ.Component, title string, activeLink string) {
 <body class="flex flex-col h-full bg-slate-900">
   @nav(activeLink)
   <main class="flex-1">
-    <div class= "mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8 py-10">
       @contents
     </div>
   </main>
