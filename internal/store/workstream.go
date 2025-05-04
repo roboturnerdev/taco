@@ -20,6 +20,13 @@ type WorkstreamStore struct {
     DB *sql.DB
 }
 
+type WorkstreamReader interface {
+    GetAllWorkstreams() ([]Workstream, error)
+    GetWorkstreamByID(id int) (Workstream, error)
+    CreateWorkstream(ws Workstream) error
+    DeleteWorkstream(id int) error
+}
+
 func NewWorkstreamStore(dbPath string) (*WorkstreamStore, error) {
 	
     db, err := sql.Open("sqlite3", dbPath)

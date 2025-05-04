@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"taco/internal/handler"
 	"taco/internal/server"
 	"taco/internal/store"
 )
@@ -21,6 +22,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	// register handlers
+	workstreamHandler := handler.NewWorkstreamHandler(logger, workstreamDb)
+	pageHandler := handler.NewPageHandler(logger)
+
 	// Uncomment on first run to seed DB with one
 	// err = workstreamDb.CreateWorkstream(store.Workstream{
 	// 	Name:        "Enclave",
@@ -34,11 +39,12 @@ func main() {
 	// 	logger.Printf("Error adding sample workstream: %s", err)
 	// }
 
-	srv, err := server.NewServer(logger, port, workstreamDb)
+	srv, err := server.NewServer(logger, port, workstreamHandler, pageHandler)
 	if err != nil {
 		logger.Fatalf("Error when creating server: %s", err)
 		os.Exit(1)
 	}
+
 	if err := srv.Start(); err != nil {
 		logger.Fatalf("Error when starting server: %s", err)
 		os.Exit(1)
