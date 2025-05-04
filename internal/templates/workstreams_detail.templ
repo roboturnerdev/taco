@@ -1,11 +1,11 @@
 package templates
 
 import (
-  "taco/internal/store"
+  "taco/internal/models"
   "strconv"
 )
 
-templ WorkstreamDetailPage(ws store.Workstream) {
+templ WorkstreamDetailPage(ws models.Workstream) {
   <main class="max-w-4xl mx-auto p-6">
     <div class="rounded-xl bg-white dark:bg-gray-800 p-6 shadow-md hover:shadow-lg transition-shadow duration-300">  
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6 border-b border-gray-200 dark:border-gray-700 pb-2">

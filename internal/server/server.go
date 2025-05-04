@@ -10,21 +10,33 @@ import (
 	"syscall"
 	"time"
 
-	"taco/internal/handler"
-
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )
+
+type PageHandler interface {
+	Home(w http.ResponseWriter, r *http.Request)
+	About(w http.ResponseWriter, r *http.Request)
+	Health(w http.ResponseWriter, r *http.Request)
+}
+
+type WorkstreamHandler interface {
+	List(w http.ResponseWriter, r *http.Request)
+	CreateNewGet(w http.ResponseWriter, r *http.Request)
+	CreateNewPost(w http.ResponseWriter, r *http.Request)
+	GetByID(w http.ResponseWriter, r *http.Request)
+	Delete(w http.ResponseWriter, r *http.Request)
+}
 
 type server struct {
 	logger       		*log.Logger
 	port         		int
 	httpServer   		*http.Server
-	workstreamHandler 	*handler.WorkstreamHandler
-	pageHandler			*handler.PageHandler
+	workstreamHandler 	WorkstreamHandler
+	pageHandler			PageHandler
 }
 
-func NewServer(logger *log.Logger, port int, handler *handler.WorkstreamHandler, ph *handler.PageHandler) (*server, error) {
+func NewServer(logger *log.Logger, port int, handler WorkstreamHandler, ph PageHandler) (*server, error) {
 
 	if logger == nil {
 		return nil, fmt.Errorf("logger is required")

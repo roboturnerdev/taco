@@ -1,11 +1,11 @@
 package templates
 
 import (
-    "taco/internal/store"
-    "strconv"
+  "strconv"
+	"taco/internal/models"
 )
 
-templ WorkstreamList(workstreams []store.Workstream) {
+templ WorkstreamList(workstreams []models.Workstream) {
   <main class="max-w-7xl mx-auto p-6">
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 

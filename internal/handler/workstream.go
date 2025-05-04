@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"taco/internal/models"
 	"taco/internal/store"
 	"taco/internal/templates"
 
@@ -97,7 +98,7 @@ func (h *WorkstreamHandler) CreateNewPost(w http.ResponseWriter, r *http.Request
 	identity := r.FormValue("identity")
 	quote := r.FormValue("quote")
 
-	workstream := store.Workstream{
+	workstream := models.Workstream{
 		Name:        name,
 		Code:        code,
 		Location:    location,
