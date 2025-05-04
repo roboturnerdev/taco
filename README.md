@@ -8,7 +8,7 @@ go get github.com/a-h/templ
 go get github.com/a-h/templ/runtime
 make go-install-air
 make go-install-templ
-make build
+make test
 make watch
 ```
 

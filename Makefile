@@ -39,7 +39,7 @@ test:
 	go test -v ./...
 
 .PHONY: watch
-watch: test ## build and watch the project with air
+watch: ## build and watch the project with air
 	go build -o ./tmp/$(APP_NAME) ./cmd/$(APP_NAME)/main.go && air
 
 .PHONY: templ-generate
