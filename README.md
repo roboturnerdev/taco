@@ -95,3 +95,39 @@ if err := s.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClos
 [heroicons](https://heroicons.com/)
 
 - FOSS svg code and icons
+
+### Testing
+
+Interfaces are implemented so we can swap in implementations (tests) to validate code before it runs.
+
+Start with the smallest testable unit which is my handlers. It is fast because the server and db don't need to run, it's isolated becasuse you control all the inputs and dependencies, and if a piece of logic fails its easy to identify the specific one.
+
+Test files are named by convention as <filename>\_test.go, and live adjacent to their implementation files.
+
+In this case, for each method a handler has, write a test for each expected resul.
+
+```go
+// Unit Tests
+
+func TestDivide(t *testing.T) {
+    // 1. Arrange
+    // - define all things to run code and define expected outcome
+    expected : 2.0
+
+    // 2. Act
+    // - call the functionality to be tested
+    got := calculator.Divide(10.0, 5.0)
+
+    // 3. Assert
+    // - check if output is the same as expected
+    if got != expected {
+        t.Errorf("expected %.1f, got %.1f", expected, got)
+    }
+
+    // Output:
+    // === RUN      TestDivide
+    // --- PASS:    TestDivide (0.00s)
+    // PASS
+    // ok   golang-unittesting/calculator   0.005s
+}
+```

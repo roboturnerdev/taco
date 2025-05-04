@@ -34,8 +34,12 @@ build: ## compile tailwindcss and templ files and build the project
 	templ generate
 	go build -o ./tmp/$(APP_NAME) ./cmd/$(APP_NAME)/main.go
 
+.PHONE: test
+test:
+	go test -v ./...
+
 .PHONY: watch
-watch: ## build and watch the project with air
+watch: test ## build and watch the project with air
 	go build -o ./tmp/$(APP_NAME) ./cmd/$(APP_NAME)/main.go && air
 
 .PHONY: templ-generate
